@@ -9,8 +9,11 @@ ADD https://theta-downloader.s3.amazonaws.com/config/guardian/config.yaml /etc/t
 ADD https://theta-downloader.s3.amazonaws.com/binary/linux/theta /bin/theta
 ADD https://theta-downloader.s3.amazonaws.com/binary/linux/thetacli /bin/thetacli
 
+RUN mkdir -p /etc/theta/key/encrypted
+RUN chmod 0700 /etc/theta/key/encrypted
+
 RUN chmod +x /bin/theta /bin/thetacli
-RUN chown 65534 /etc/theta
+RUN chown -R 65534 /etc/theta
 
 USER 65534
 ENTRYPOINT ["dumb-init", "--", "/bin/theta", "start", "--config", "/etc/theta"]
