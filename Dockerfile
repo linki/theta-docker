@@ -2,12 +2,19 @@ FROM ubuntu:20.04
 
 RUN apt-get update && apt-get install -y \
   ca-certificates \
+  curl \
   dumb-init
 
-ADD https://drzm1v2r1c2e3.cloudfront.net/snapshot/theta_snapshot-5999358-0xdd0f36dc67a7f15a9abf621e444245b669f15dec3da2fc2f19e2c43225b1efdb-2020-06-06 /etc/theta/snapshot
-ADD https://theta-downloader.s3.amazonaws.com/config/guardian/config.yaml /etc/theta/config.yaml
-ADD https://theta-downloader.s3.amazonaws.com/binary/linux/theta /bin/theta
-ADD https://theta-downloader.s3.amazonaws.com/binary/linux/thetacli /bin/thetacli
+RUN curl https://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt.pem \
+  -o /usr/local/share/ca-certificates/DigiCertSHA2SecureServerCA.crt && \
+  update-ca-certificates
+
+RUN mkdir -p /etc/theta
+
+RUN curl -o /bin/theta $(curl https://mainnet-data.thetatoken.org/binary?os=linux\&name=theta)
+RUN curl -o /bin/thetacli $(curl https://mainnet-data.thetatoken.org/binary?os=linux\&name=thetacli)
+RUN curl -o /etc/theta/config.yaml $(curl https://mainnet-data.thetatoken.org/config?is_guardian=true)
+RUN curl -o /etc/theta/snapshot $(curl https://mainnet-data.thetatoken.org/snapshot)
 
 RUN mkdir -p /etc/theta/key/encrypted
 RUN chmod 0700 /etc/theta/key/encrypted
